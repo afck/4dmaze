@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>4dmaze by afck</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">4dmaze</h1>
+      <h2 class="project-tagline">A four-dimensional tile-based maze game</h2>
+      <a href="https://github.com/afck/4dmaze" class="btn">View on GitHub</a>
+      <a href="https://github.com/afck/4dmaze/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/afck/4dmaze/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="yet-another-4d-maze-game" class="anchor" href="#yet-another-4d-maze-game" aria-hidden="true"><span class="octicon octicon-link"></span></a>Yet another 4D Maze game</h1>
+
+<p>This is the SDL 2 port of a four-dimensional maze game I rediscovered.
+I had written it over a decade ago in undecipherable C ...</p>
+
+<h2>
+<a id="build-it" class="anchor" href="#build-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build it</h2>
+
+<p>If you have <a href="https://gcc.gnu.org/">GCC</a> and <a href="http://www.libsdl.org/">SDL 2</a>
+installed on a Linux system,</p>
+
+<div class="highlight highlight-sh"><pre>make</pre></div>
+
+<p>should create a binary file called maze.</p>
+
+<p>If that doesn't work, you will have to wait until it has a proper Makefile (or
+help me out and create one).</p>
+
+<h2>
+<a id="understand-it" class="anchor" href="#understand-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Understand it</h2>
+
+<p>If you wanted to view a building with several floors in a tile-based game on a
+two-dimensional monitor, you might show the different floors on top of each
+other.
+Thus left and right on your screen would always correspond to west and east, but
+up and down would correspond to north and south within each floor, but to the
+actual elevation, the "real up" and "real down", if you move between floors.
+So we'd use the vertical screen dimension twice: Moving one tile up or down
+means moving north or south within a floor, but movin up or down to a different
+floor map means going up or down the stairs. We have split the meaning of the
+vertical dimension into two parts: "minor up/down" for north and south and
+"major up/down" for one floor up and one floor down, and that gave us the means
+to display a three-dimensional world.
+Now, if the building is big, we'll neither be able to show a complete floor, nor
+to show all the floors. We would only show the floor with the player inside it,
+and maybe two above and two below. And within each floor, we would only show the
+tile with the player on it and maybe two more rows of tiles to the north, south,
+east and west. If we moved the player, the view would scroll accordingly.</p>
+
+<p>This game takes place in a four-dimensional world, so we do the same trick that
+gave us two model dimensions for the vertical screen dimension with the
+horizontal screen dimension, too! You could think of it as a building where the
+floors aren't numbered with just one but two numbers: From floor (0, 0) you can
+either go up to floor (1, 0), or you can go "the other up" to (0, 1).</p>
+
+<p>Instead of shaky metaphors with floors and buildings, however, we will just
+stick to what we see on the screen now and call the four dimensions
+"minor horizontal", "major horizontal", "minor vertical" and "major vertical".</p>
+
+<p>That's almost all you need to know about the geometry of the maze: The game is
+tile-based, takes place in a four-dimensional hyper-rectangularly shaped grid
+and allows you to move in eight directions between adjacent tiles. But one more
+thing: The maze wraps around! That is, if you leave the maze on one side, you
+enter it from the other side, just like in Pac-Man. Or equivalently: On each
+side of the maze there's an identical copy of itself, creating an infinite
+tiling of the four-dimensional grid. You won't notice when you wrap around that
+way, though, as you are always displayed in the middle of the screen and the
+maze scrolls around you.</p>
+
+<h2>
+<a id="play-it" class="anchor" href="#play-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Play it</h2>
+
+<p>Select a level - the provided ones should be roughly in order of difficulty, but
+feel free to inspect the text files, create your own levels and send them to me!</p>
+
+<p>You now see the hypercube of 5 * 5 * 5 * 5 tiles around your position: In each
+of the eight directions, you can see two tiles ahead. You can move around using
+these keys:</p>
+
+<table>
+<thead>
+<tr>
+<th>key</th>
+<th>action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W</td>
+<td>move minor-up</td>
+</tr>
+<tr>
+<td>A</td>
+<td>move minor-left</td>
+</tr>
+<tr>
+<td>S</td>
+<td>move minor-down</td>
+</tr>
+<tr>
+<td>D</td>
+<td>move minor-right</td>
+</tr>
+<tr>
+<td>up arrow</td>
+<td>move major-up</td>
+</tr>
+<tr>
+<td>left arrow</td>
+<td>move major-left</td>
+</tr>
+<tr>
+<td>down arrow</td>
+<td>move major-down</td>
+</tr>
+<tr>
+<td>right arrow</td>
+<td>move major-right</td>
+</tr>
+<tr>
+<td>space</td>
+<td>shuffle dimensions (i. e. rotate randomly for added confusion)</td>
+</tr>
+<tr>
+<td>escape</td>
+<td>exit</td>
+</tr>
+</tbody>
+</table>
+
+<p>Your goal is to reach the goal, which is shown as a rainbow-colored sphere. On
+your way, you will find a few special items:</p>
+
+<ul>
+<li>A silver key allows you to remove one silver lock.</li>
+<li>A gold key allows you to remove one golden lock.</li>
+<li>There are some stones that can be pushed around.</li>
+<li>There are stone-shaped holes that can only be removed by pushing a stone into
+them.</li>
+<li>Yin-yang-shaped switches toggle whether the red or the green tiles can be
+passed.</li>
+</ul>
+
+<p>Good luck, and don't get lost in hyperspace!</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/afck/4dmaze">4dmaze</a> is maintained by <a href="https://github.com/afck">afck</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
+
