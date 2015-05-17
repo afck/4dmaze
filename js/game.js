@@ -18,42 +18,42 @@ mazegame.Maze = function(level) {
     if (!isNaN(n)) {
       this.grid.push(n + SOLIDBLOCK);
     } else switch (ch) {
-          case "k":
-            this.grid.push(SKEY);
-            break;
-          case "K":
-            this.grid.push(GKEY);
-            break;
-          case "h":
-            this.grid.push(SKEYHOLE);
-            break;
-          case "H":
-            this.grid.push(GKEYHOLE);
-            break;
-          case "r":
-            this.grid.push(RED);
-            break;
-          case "g":
-            this.grid.push(GREEN);
-            break;
-          case "s":
-            this.grid.push(RGSWITCH);
-            break;
-          case "S":
-            this.grid.push("S"); // Start
-            break;
-          case "b":
-            this.grid.push(MOVEBLOCK);
-            break;
-          case "B":
-            this.grid.push(MOVEHOLE);
-            break;
-          case "G":
-            this.grid.push(GOAL);
-            break;
-          case " ":
-            this.grid.push(EMPTY);
-            break;
+      case "k":
+        this.grid.push(SKEY);
+        break;
+      case "K":
+        this.grid.push(GKEY);
+        break;
+      case "h":
+        this.grid.push(SKEYHOLE);
+        break;
+      case "H":
+        this.grid.push(GKEYHOLE);
+        break;
+      case "r":
+        this.grid.push(RED);
+        break;
+      case "g":
+        this.grid.push(GREEN);
+        break;
+      case "s":
+        this.grid.push(RGSWITCH);
+        break;
+      case "S":
+        this.grid.push("S"); // Start
+        break;
+      case "b":
+        this.grid.push(MOVEBLOCK);
+        break;
+      case "B":
+        this.grid.push(MOVEHOLE);
+        break;
+      case "G":
+        this.grid.push(GOAL);
+        break;
+      case " ":
+        this.grid.push(EMPTY);
+        break;
     }
   }
   if (this.size[0] * this.size[1] * this.size[2] * this.size[3]
@@ -265,36 +265,36 @@ function loadLevel(filename) {
 }
 
 function keyDownHandler(event) {
-  switch (event.key) {
-    case "w":
+  switch (event.keyCode) {
+    case 87: // W
       maze.move([0, 0, -1, 0]);
       break;
-    case "a":
+    case 65: // A
       maze.move([-1, 0, 0, 0]);
       break;
-    case "s":
+    case 83: // S
       maze.move([0, 0, 1, 0]);
       break;
-    case "d":
+    case 68: // D
       maze.move([1, 0, 0, 0]);
       break;
-    case "Up":
-    case "i":
+    case 38: // up
+    case 73: // I
       maze.move([0, 0, 0, -1]);
       break;
-    case "Left":
-    case "j":
+    case 37: // left
+    case 74: // J
       maze.move([0, -1, 0, 0]);
       break;
-    case "Down":
-    case "k":
+    case 40: // down
+    case 75: // K
       maze.move([0, 0, 0, 1]);
       break;
-    case "Right":
-    case "l":
+    case 39: // right
+    case 76: // L
       maze.move([0, 1, 0, 0]);
       break;
-    case " ":
+    case 32: // space
       maze.shuffle();
       break;
     default:
