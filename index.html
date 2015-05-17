@@ -5,7 +5,6 @@
     <title>4dmaze by afck</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
@@ -13,6 +12,7 @@
     <section class="page-header">
       <h1 class="project-name">4dmaze</h1>
       <h2 class="project-tagline">A four-dimensional tile-based maze game</h2>
+      <a href="game.html" class="btn">Play online</a>
       <a href="https://github.com/afck/4dmaze" class="btn">View on GitHub</a>
       <a href="https://github.com/afck/4dmaze/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/afck/4dmaze/tarball/master" class="btn">Download .tar.gz</a>
@@ -22,11 +22,16 @@
       <h1>
 <a id="yet-another-4d-maze-game" class="anchor" href="#yet-another-4d-maze-game" aria-hidden="true"><span class="octicon octicon-link"></span></a>Yet another 4D Maze game</h1>
 
-<p>This is the SDL 2 port of a four-dimensional maze game I rediscovered.
-I had written it over a decade ago in undecipherable C ...</p>
+<p>These are the SDL 2 and JavaScript ports of a four-dimensional maze game I
+rediscovered. I had written it over a decade ago in undecipherable C ...</p>
+
 
 <h2>
 <a id="build-it" class="anchor" href="#build-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build it</h2>
+
+<p>Most users can skip this section and only read the explanation below, then
+head straight to the <a href="game.html">JavaScript version</a> and play in the
+browser.</p>
 
 <p>If you have <a href="https://gcc.gnu.org/">GCC</a> and <a href="http://www.libsdl.org/">SDL 2</a>
 installed on a Linux system,</p>
@@ -37,6 +42,7 @@ installed on a Linux system,</p>
 
 <p>If that doesn't work, you will have to wait until it has a proper Makefile (or
 help me out and create one).</p>
+
 
 <h2>
 <a id="understand-it" class="anchor" href="#understand-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Understand it</h2>
@@ -78,6 +84,7 @@ side of the maze there's an identical copy of itself, creating an infinite
 tiling of the four-dimensional grid. You won't notice when you wrap around that
 way, though, as you are always displayed in the middle of the screen and the
 maze scrolls around you.</p>
+
 
 <h2>
 <a id="play-it" class="anchor" href="#play-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Play it</h2>
