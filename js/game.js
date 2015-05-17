@@ -323,6 +323,8 @@ var SOLIDBLOCK = 13;
 
 // Configure canvas.
 var stage = document.getElementById("mazeCanvas");
+//stage.width = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING;
+//stage.height = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING;
 stage.width = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING;
 stage.height = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING;
 var ctx = stage.getContext("2d");

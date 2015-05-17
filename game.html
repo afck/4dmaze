@@ -7,26 +7,74 @@
   <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
   <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
   <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="stylesheets/4dmaze.css" media="screen">
 </head>
 <body>
   <section class="page-header">
     <h1 class="project-name">4dmaze</h1>
     <h2 class="project-tagline">A four-dimensional tile-based maze game</h2>
     <a href="index.html" class="btn">Back to the homepage</a>
-    <a href="#" onclick="loadLevel('mazes/0.txt');" class="btn">Level 0</a>
-    <a href="#" onclick="loadLevel('mazes/1.txt');" class="btn">Level 1</a>
-    <a href="#" onclick="loadLevel('mazes/2.txt');" class="btn">Level 2</a>
-    <a href="#" onclick="loadLevel('mazes/3.txt');" class="btn">Level 3</a>
-    <a href="#" onclick="loadLevel('mazes/4.txt');" class="btn">Level 4</a>
-    <a href="#" onclick="loadLevel('mazes/5.txt');" class="btn">Level 5</a>
-    <a href="#" onclick="loadLevel('mazes/6.txt');" class="btn">Level 6</a>
+    <a href="#game" onclick="loadLevel('mazes/0.txt');" class="btn">Level 0</a>
+    <a href="#game" onclick="loadLevel('mazes/1.txt');" class="btn">Level 1</a>
+    <a href="#game" onclick="loadLevel('mazes/2.txt');" class="btn">Level 2</a>
+    <a href="#game" onclick="loadLevel('mazes/3.txt');" class="btn">Level 3</a>
+    <a href="#game" onclick="loadLevel('mazes/4.txt');" class="btn">Level 4</a>
+    <a href="#game" onclick="loadLevel('mazes/5.txt');" class="btn">Level 5</a>
+    <a href="#game" onclick="loadLevel('mazes/6.txt');" class="btn">Level 6</a>
   </section>
-  <section class="main-content">
-    <p>Play with the W, A, S, D and the arrow keys. For more details read
-    <a href="index.html">the documentation here</a></p>
+  <section class="anchor main-content" id="game">
+    <p>Play with the W, A, S, D and the arrow keys or I, J, K, L. For more
+    details read <a href="index.html">the documentation here</a></p>
     <canvas id="mazeCanvas">
       Your browser does not support HTML5. Please upgrade.
     </canvas>
+    <div class="controls">
+      <div onclick="maze.move([0, 0, 0, -1]); draw();"
+           class="arrow"
+           title="Major-up: keys I or up arrow">
+        &#x2b06;
+      </div>
+      <br />
+      <div onclick="maze.move([0, 0, -1, 0]); draw();"
+           class="arrow"
+           title="Minor-up: key W">
+        &#x21e7;
+      </div>
+      <br />
+      <div onclick="maze.move([0, -1, 0, 0]); draw();"
+           class="arrow"
+           title="Major-left: keys J or left arrow">
+        &#x2b05;
+      </div>
+      <div onclick="maze.move([-1, 0, 0, 0]); draw();"
+           class="arrow"
+           title="Minor-left: key A">
+        &#x21e6;
+      </div>
+      <div></div>
+      <div onclick="maze.move([1, 0, 0, 0]); draw();"
+           class="arrow"
+           title="Minor-right: key D">
+        &#x21e8;
+      </div>
+      <div onclick="maze.move([0, 1, 0, 0]); draw();"
+           class="arrow"
+           title="Major-right: keys L or right arrow">
+        &#x27a1;
+      </div>
+      <br />
+      <div onclick="maze.move([0, 0, 1, 0]); draw();"
+           class="arrow"
+           title="Minor-down: key S">
+        &#x21e9;
+      </div>
+      <br />
+      <div onclick="maze.move([0, 0, 0, 1]); draw();"
+           class="arrow"
+           title="Major-down: keys K or down arrow">
+        &#x2b07;
+      </div>
+    </div>
   </section>
   <iframe id="levelFile"
           src="mazes/0.txt"
