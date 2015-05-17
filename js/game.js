@@ -203,7 +203,7 @@ mazegame.Maze.prototype.move = function(dx) {
 }
 
 function draw() {	
-  if (!maze) {
+  if (typeof(maze) === "undefined") {
     return; // Not yet loaded.
   }
   //Clear Canvas
