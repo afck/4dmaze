@@ -69,6 +69,7 @@ mazegame.Maze = function(level) {
   this.pass = RED;
   this.skeys = 0;
   this.gkeys = 0;
+  this.steps = 0;
 }
 
 mazegame.Maze.prototype.normalized = function(x) {
@@ -200,6 +201,7 @@ mazegame.Maze.prototype.move = function(dx) {
       return;
   }
   this.pos = newpos;
+  this.steps++;
 }
 
 function draw() {	
@@ -209,6 +211,7 @@ function draw() {
   //Clear Canvas
   ctx.fillStyle = "#444488";
   ctx.fillRect(0, 0, stage.width, stage.height);
+  // The maze
   for (var x0 = -VIEW; x0 <= VIEW; x0++) {
     for (var x1 = -VIEW; x1 <= VIEW; x1++) {
       for (var x2 = -VIEW; x2 <= VIEW; x2++) {
@@ -230,10 +233,26 @@ function draw() {
       }
     }
   }
-  var x = VIEW * BLOCK + VIEW * (DIAMETER * BLOCK + SPACING) + SPACING;
-  var y = VIEW * BLOCK + VIEW * (DIAMETER * BLOCK + SPACING) + SPACING;
+  // Status bar
+  var y = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING;
+  for (var i = 0; i < maze.gkeys + maze.skeys; i++) {
+    var offset = ((i < maze.gkeys) ? GKEY : SKEY) * BLOCK;
+    var x = SPACING + i * BLOCK;
+    ctx.drawImage(blocksImage, offset, 0, BLOCK, BLOCK,
+                                    x, y, BLOCK, BLOCK);
+  }
+  var x = DIAMETER * DIAMETER * BLOCK + DIAMETER * SPACING;
+  ctx.textAlign="right";
+  ctx.font = "bold 30px sans-serif";
+  ctx.textBaseline = "top";
+  ctx.fillStyle = "#000000";
+  ctx.fillText(maze.steps + " STEPS", x, y);
+  // Player sprite
+  x = VIEW * BLOCK + VIEW * (DIAMETER * BLOCK + SPACING) + SPACING;
+  y = VIEW * BLOCK + VIEW * (DIAMETER * BLOCK + SPACING) + SPACING;
   ctx.drawImage(youImage, 0, 0, BLOCK, BLOCK,
                           x, y, BLOCK, BLOCK);
+  // "Congrats" text
   if (maze.isWon()) {
     x += BLOCK / 2;
     y += BLOCK / 2;
@@ -326,7 +345,8 @@ var stage = document.getElementById("mazeCanvas");
 //stage.width = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING;
 //stage.height = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING;
 stage.width = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING;
-stage.height = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING;
+stage.height = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING
+               + SPACING + BLOCK;
 var ctx = stage.getContext("2d");
 ctx.fillStyle = "black";
  
