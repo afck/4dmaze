@@ -31,4 +31,5 @@ div.controls div.arrow:hover {
 
 #game canvas {
   width: 100%;
+  max-width: 760px;
 }

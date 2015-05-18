@@ -349,7 +349,7 @@ stage.height = DIAMETER * DIAMETER * BLOCK + (DIAMETER + 1) * SPACING
                + SPACING + BLOCK;
 var ctx = stage.getContext("2d");
 ctx.fillStyle = "black";
- 
+
 // Load graphics.
 var youImage = new Image();
 youImage.onload = function() { draw(); };
