@@ -179,16 +179,15 @@ function toPx(xmin, xmaj) {
       + SPACING;
 }
 
-function drawBlock(offset, x, y) {
-  context.drawImage(blocksImage, offset * BLOCK, 0, BLOCK, BLOCK,
-                                 x,              y, BLOCK, BLOCK);
-}
-
 function draw() {
+  var drawBlock = function(img, t, x, y) {
+    context.drawImage(img, t * BLOCK, 0, BLOCK, BLOCK, x, y, BLOCK, BLOCK);
+  };
+
   if (typeof(maze) === "undefined") {
     return; // Not yet loaded.
   }
-  //Clear Canvas
+  //Clear canvas
   context.fillStyle = "#444488";
   context.fillRect(0, 0, canvas.width, canvas.height);
   // The maze
@@ -200,7 +199,7 @@ function draw() {
           if (t == maze.getBlocked()) {
             t += 2;
           }
-          drawBlock(t, toPx(x0, x1), toPx(x2, x3));
+          drawBlock(blocksImage, t, toPx(x0, x1), toPx(x2, x3));
         }
       }
     }
@@ -208,24 +207,22 @@ function draw() {
   // Status bar
   var y = toPx(VIEW + 1, VIEW) + SPACING;
   maze.getInventory().forEach(function(t, i) {
-    drawBlock(t, SPACING + i * BLOCK, y);
+    drawBlock(blocksImage, t, SPACING + i * BLOCK, y);
   });
-  var x = toPx(VIEW + 1, VIEW);
   context.textAlign="right";
   context.font = "bold 30px sans-serif";
   context.textBaseline = "top";
   context.fillStyle = "#000000";
-  context.fillText(maze.getSteps() + " STEPS", x, y);
+  context.fillText(maze.getSteps() + " STEPS", toPx(VIEW + 1, VIEW), y);
   // Player sprite
-  context.drawImage(youImage, 0,          0,          BLOCK, BLOCK,
-                              toPx(0, 0), toPx(0, 0), BLOCK, BLOCK);
+  drawBlock(youImage, 0, toPx(0, 0), toPx(0, 0));
   // "Congrats" text
   if (maze.isWon()) {
     var x = toPx(0, 0) + BLOCK / 2;
     var y = toPx(0, 0) + BLOCK / 2;
-    context.textAlign="center"; 
+    context.textAlign="center";
     context.font = "bold 50px sans-serif";
-    context.textBaseline = 'middle';
+    context.textBaseline = "middle";
     context.fillStyle = "#000000";
     context.fillText(WIN_TEXT, x + 2, y + 5);
     context.fillStyle = "#FFFFFF";
@@ -262,7 +259,6 @@ var canvas = document.getElementById("mazeCanvas");
 canvas.width = toPx(VIEW + 1, VIEW) + SPACING;
 canvas.height = toPx(VIEW + 1, VIEW) + 2 * SPACING + BLOCK;
 var context = canvas.getContext("2d");
-context.fillStyle = "black";
 
 // Load graphics.
 var youImage = new Image();
