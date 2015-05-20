@@ -1,10 +1,14 @@
 # Yet another 4D Maze game
 
-This is the SDL 2 port of a four-dimensional maze game I rediscovered.
-I had written it over a decade ago in undecipherable C ...
+These are the SDL 2 and JavaScript ports of a four-dimensional maze game I
+rediscovered. I had written it over a decade ago in undecipherable C ...
 
 
 ## Build it
+
+Most users can skip this section and only read the explanation below, then head
+straight to the [JavaScript version](https://afck.github.io/4dmaze/game.html)
+and play in the browser.
 
 If you have [GCC](https://gcc.gnu.org/) and [SDL 2](http://www.libsdl.org/)
 installed on a Linux system,
@@ -26,7 +30,7 @@ Thus left and right on your screen would always correspond to west and east, but
 up and down would correspond to north and south within each floor, but to the
 actual elevation, the "real up" and "real down", if you move between floors.
 So we'd use the vertical screen dimension twice: Moving one tile up or down
-means moving north or south within a floor, but movin up or down to a different
+means moving north or south within a floor, but moving up or down to a different
 floor map means going up or down the stairs. We have split the meaning of the
 vertical dimension into two parts: "minor up/down" for north and south and
 "major up/down" for one floor up and one floor down, and that gave us the means
@@ -91,5 +95,5 @@ your way, you will find a few special items:
 * Yin-yang-shaped switches toggle whether the red or the green tiles can be
   passed.
 
-Good luck, and don't get lost in hyperspace!
+[Good luck, and don't get lost in hyperspace!](https://afck.github.io/4dmaze/game.html)
 
