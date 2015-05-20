@@ -73,10 +73,10 @@ W           | move minor-up
 A           | move minor-left
 S           | move minor-down
 D           | move minor-right
-up arrow    | move major-up
-left arrow  | move major-left
-down arrow  | move major-down
-right arrow | move major-right
+I           | move major-up
+J           | move major-left
+K           | move major-down
+L           | move major-right
 space       | shuffle dimensions (i. e. rotate randomly for added confusion)
 escape      | exit
 

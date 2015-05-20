@@ -81,10 +81,14 @@ void Play(int fileNr) {
           case SDLK_a:
             if (!Move(0, -1)) go = 0;
             break;
+          case SDLK_l:
           case SDLK_RIGHT:
+          case SDLK_KP_6:
             if (!Move(1, 1)) go = 0;
             break;
+          case SDLK_j:
           case SDLK_LEFT:
+          case SDLK_KP_4:
             if (!Move(1, -1)) go = 0;
             break;
           case SDLK_s:
@@ -93,11 +97,15 @@ void Play(int fileNr) {
           case SDLK_w:
             if (!Move(2, -1)) go = 0;
             break;
+          case SDLK_k:
           case SDLK_DOWN:
           case SDLK_KP_2:
+          case SDLK_KP_5:
             if (!Move(3, 1)) go = 0;
             break;
+          case SDLK_i:
           case SDLK_UP:
+          case SDLK_KP_8:
             if (!Move(3, -1)) go = 0;
             break;
           case SDLK_SPACE:
