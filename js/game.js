@@ -286,6 +286,9 @@ function loadLevel(filename) {
 }
 
 function keyDownHandler(event) {
+  if (document.activeElement.id == "levelText") {
+    return;
+  }
   if (event.keyCode in DIR_MAP) {
     maze.move(DIR_MAP[event.keyCode]);
   } else if (event.keyCode == 32) {
