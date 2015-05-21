@@ -26,7 +26,7 @@
     <h2>4D Maze - JavaScript version</h2>
     <p>Play with W, A, S, D and I, J, K, L. For
     details read <a href="index.html">the documentation here</a></p>
-    <canvas id="mazeCanvas">
+    <canvas id="mazeCanvas" onclick="onClickHandler">
       Your browser does not support HTML5. Please upgrade.
     </canvas>
     <div class="controls">
@@ -85,13 +85,21 @@
         Paste your own levels here to play them! Note that the contents of this
         box are not saved anywhere, so make sure to copy them into a text file.
         See <a href="#buildingBlocks">below</a> for a list of available building
-        blocks.
+        blocks. In construction mode, you can solve the maze in reverse: Click
+        on an item in your inventory to put it on the map, if it is guaranteed
+        that the level remains solvable that way.
       </p>
       <!-- TODO: wrap="off" is not valid HTML5, but there seems to be no other
                  way to achieve the same effect. -->
       <textarea id="levelText" wrap="off"></textarea>
       <p id="errorMessage"></p>
       <button type="button" onclick="playLevel()">Play!</button>
+      <button type="button" onclick="maze.toggleReverseMode(); draw();">
+        Toggle construction mode
+      </button>
+      <button type="button" onclick="loadCurrent()">
+        Load current state into the text field
+      </button>
       <table id="buildingBlocks" class="anchor">
          <thead><th>Symbol</th><th>Level element</th></thead>
          <tbody>

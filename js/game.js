@@ -14,10 +14,15 @@ mazegame.Maze = function(level) {
   size.push(Math.floor(level.length / (size[0] + 1) / (size[1] + 1) / size[2]));
   var level = level.replace(/\+/g, "").replace(/\n/g, "");
   var start_i = level.indexOf("S");
-  var pos = [start_i % size[0],
-             Math.floor(start_i / size[0]) % size[1],
-             Math.floor(start_i / size[0] / size[1]) % size[2],
-             Math.floor(start_i / size[0] / size[1] / size[2])];
+  var pos = [0, 0, 0, 0];
+  if (start_i == -1) {
+    errors += "Starting position 'S' not found. ";
+  } else {
+    pos = [start_i % size[0],
+           Math.floor(start_i / size[0]) % size[1],
+           Math.floor(start_i / size[0] / size[1]) % size[2],
+           Math.floor(start_i / size[0] / size[1] / size[2])];
+  }
   var grid = level.split("").map(function(ch) {
     if (!(ch in TILE_MAP)) {
       errors += "Character '" + ch + "' is not a valid level element! ";
@@ -33,6 +38,8 @@ mazegame.Maze = function(level) {
   var blocked = GREEN;
   var steps = 0;
   var inventory = [];
+  var reverseMode = false;
+  var previousDx = null;
 
   /** Returns the value between 0 and m-1 that is equal to x modulo m. */
   var mod = function(x, m) {
@@ -60,6 +67,11 @@ mazegame.Maze = function(level) {
   var sum = function(x, y) {
     return normalized([x[0] + y[0], x[1] + y[1], x[2] + y[2], x[3] + y[3]]);
   };
+
+  /** Returns the negative of x, modulo the maze's size. */
+  var neg = function(x) {
+    return normalized([-x[0], -x[1], -x[2], -x[3]]);
+  }
 
   /** Returns the value of the tile at x. */
   var get = function(x) {
@@ -119,10 +131,30 @@ mazegame.Maze = function(level) {
   /** Tries to move the player in direction dx. */
   this.move = function(dx) {
     var x = sum(pos, dx);
-    grabObstacle(x);
-    pushObstacle(x, dx);
-    if (isPassable(x)) {
-      stepOnto(x);
+    if (reverseMode) {
+      if (get(x) >= SOLIDBLOCK) {
+        set(x, EMPTY);
+      }
+      if (isPassable(x) || get(x) >= SOLIDBLOCK) {
+        if (get(pos) == RGSWITCH) {
+          blocked = (blocked == RED) ? GREEN : RED;
+          inventory = inventory.map(function(item) {
+            if (item == blocked) {
+              return (blocked == RED) ? GREEN : RED;
+            }
+            return item;
+          });
+        }
+        pos = x;
+        steps--;
+        previousDx = dx;
+      }
+    } else {
+      grabObstacle(x);
+      pushObstacle(x, dx);
+      if (isPassable(x)) {
+        stepOnto(x);
+      }
     }
   };
 
@@ -144,18 +176,18 @@ mazegame.Maze = function(level) {
       swap(2, Math.floor(Math.random() * 3));
       swap(1, Math.floor(Math.random() * 2));
     }
-    var move = function(x) {
+    var switchDim = function(x) {
       return [x[map[0]], x[map[1]], x[map[2]], x[map[3]]];
     }
-    pos = move(pos);
-    var newsize = move(size);
+    pos = switchDim(pos);
+    var newsize = switchDim(size);
     var newgrid = grid.slice(0);
     for (var x0 = 0; x0 < size[0]; x0++) {
       for (var x1 = 0; x1 < size[1]; x1++) {
         for (var x2 = 0; x2 < size[2]; x2++) {
           for (var x3 = 0; x3 < size[3]; x3++) {
             var x = [x0, x1, x2, x3];
-            var newx = move(x);
+            var newx = switchDim(x);
             var newindex = newx[0] + newsize[0] * (
                 newx[1] + newsize[1] * (newx[2] + newsize[2] * newx[3]));
             newgrid[newindex] = get(x);
@@ -191,12 +223,125 @@ mazegame.Maze = function(level) {
   this.getErrors = function() {
     return errors;
   };
+
+  this.toggleReverseMode = function() {
+    reverseMode = !reverseMode;
+    if (reverseMode) {
+      inventory.splice(0, 0, SLOCK, GLOCK, RGSWITCH, MOVEBLOCK, GOAL,
+          blocked == RED ? GREEN : RED);
+    } else {
+      inventory = inventory.filter(function(i) {
+        return i == GKEY || i == SKEY;
+      });
+    }
+  };
+
+  this.getReverseMode = function() {
+    return reverseMode;
+  };
+
+  this.dropFromInventory = function(i) {
+    if (!reverseMode) {
+      return;
+    }
+    var item = inventory[i];
+    if ([RGSWITCH, RED, GREEN, GOAL].concat(COLLECTIBLE).indexOf(item) != -1) {
+      if (get(pos) == EMPTY) {
+        set(pos, item);
+        if (COLLECTIBLE.indexOf(item) != -1) {
+          inventory.splice(i, 1);
+        }
+      }
+    } else if (item == SLOCK || item == GLOCK) {
+      if (previousDx != null) {
+        var prevPos = sum(pos, neg(previousDx));
+        if (get(prevPos) == EMPTY) {
+          set(prevPos, item);
+          inventory.push(CONSUME[item]);
+        }
+      }
+    } else if (item == MOVEBLOCK) {
+      if (previousDx != null) {
+        var prevPos = sum(pos, neg(previousDx));
+        var furtherPos = sum(prevPos, neg(previousDx));
+        if (get(prevPos) == EMPTY) {
+          if (get(furtherPos) == EMPTY || get(furtherPos) >= SOLIDBLOCK) {
+            set(prevPos, MOVEBLOCK);
+            set(furtherPos, MOVEHOLE);
+          } else if (get(furtherPos) == MOVEBLOCK) {
+            set(prevPos, MOVEBLOCK);
+            set(furtherPos, EMPTY);
+          }
+        }
+      }
+    }
+  };
+
+  /** Returns the current state of the game as a level file. */
+  this.serialize = function() {
+    errors = "";
+    if (inventory.some(function(item) {
+      return COLLECTIBLE.indexOf(item) != -1;
+    })) {
+      errors = "Cannot possess keys in the beginning.";
+      return null;
+    }
+    var level = "";
+    var ch_map = {};
+    for (ch in TILE_MAP) {
+      ch_map[TILE_MAP[ch]] = ch;
+    }
+    ch_map[EMPTY] = " ";
+    for (var x3 = 0; x3 < size[3]; x3++) {
+      for (var x2 = 0; x2 < size[2]; x2++) {
+        for (var x1 = 0; x1 < size[1]; x1++) {
+          for (var x0 = 0; x0 < size[0]; x0++) {
+            var x = [x0, x1, x2, x3];
+            if (pos.every(function(xi, i) { return xi == x[i]; })) {
+              if (get(x) != EMPTY) {
+                errors = "Must start on an empty field!";
+                return none;
+              }
+              level += "S";
+            } else {
+              level += ch_map[get(x)];
+            }
+          }
+          level += "+";
+        }
+        level += "\n";
+      }
+      level += Array((size[0] + 1) * size[1] + 1).join("+") + "\n";
+    }
+    return level;
+  };
 }
 
 function toPx(xmin, xmaj) {
   return (xmin + VIEW) * BLOCK
       + (DIAMETER * BLOCK + SPACING) * (xmaj + VIEW)
       + SPACING;
+}
+
+function onClickHandler(event) {
+  var canvasRect = canvas.getBoundingClientRect();
+  var x = event.clientX - canvasRect.left;
+  var y = event.clientY - canvasRect.top;
+  for (var k in DIR_MAP) {
+    var dx = DIR_MAP[k];
+    var dirX = toPx(dx[0], dx[1]);
+    var dirY = toPx(dx[2], dx[3]);
+    if (x >= dirX && y >= dirY && x < dirX + BLOCK && y < dirY + BLOCK) {
+      maze.move(dx);
+      draw();
+      return;
+    }
+  }
+  var statusBarY = toPx(VIEW + 1, VIEW) + SPACING;
+  if (y >= statusBarY && y < statusBarY + BLOCK) {
+    maze.dropFromInventory(Math.floor((x - SPACING) / BLOCK));
+    draw();
+  }
 }
 
 function draw() {
@@ -240,7 +385,7 @@ function draw() {
   context.fillStyle = "#000000";
   context.fillText(maze.getSteps() + " STEPS", toPx(VIEW + 1, VIEW), y);
   // "Congrats" text
-  if (maze.isWon()) {
+  if (maze.isWon() && !maze.getReverseMode()) {
     var x = toPx(0, 0) + BLOCK / 2;
     var y = toPx(0, 0) + BLOCK / 2;
     context.textAlign="center";
@@ -262,27 +407,30 @@ function editLevel() {
 }
 
 function playLevel() {
-  var levelTextarea = document.getElementById("levelText");
-  var contents = levelTextarea.value;
+  var contents = document.getElementById("levelText").value;
   maze = new mazegame.Maze(contents);
-  var errorMessage = document.getElementById("errorMessage");
-  errorMessage.textContent = maze.getErrors();
+  document.getElementById("errorMessage").textContent = maze.getErrors();
   draw();
 }
 
 function loadMaze() {
   var levelFrame = document.getElementById("levelFile");
   var contents = levelFrame.contentWindow.document.body.childNodes[0].innerHTML;
-  var levelTextarea = document.getElementById("levelText");
-  levelTextarea.value = contents;
+  document.getElementById("levelText").value = contents;
   playLevel();
 }
 
 function loadLevel(filename) {
   document.getElementById("editLevel").style.display = "none";
   document.getElementById("editLevelButton").style.display = "inline-block";
-  var levelFrame = document.getElementById("levelFile");
-  levelFrame.src = filename;
+  document.getElementById("levelFile").src = filename;
+}
+
+function loadCurrent() {
+  var level = maze.serialize();
+  if (level != null) {
+    document.getElementById("levelText").value = level;
+  }
 }
 
 function keyDownHandler(event) {
@@ -291,8 +439,10 @@ function keyDownHandler(event) {
   }
   if (event.keyCode in DIR_MAP) {
     maze.move(DIR_MAP[event.keyCode]);
-  } else if (event.keyCode == 32) {
-    maze.shuffle();
+  } else switch (event.keyCode) {
+    case 32: // Space
+      maze.shuffle();
+      break;
   }
   draw();
 }
@@ -312,7 +462,8 @@ blocksImage.onload = function() { draw(); };
 blocksImage.src = "images/blocks.png";
 
 // Add keyboard input listener.
-document.addEventListener("keydown",keyDownHandler, false);
+document.addEventListener("keydown", keyDownHandler, false);
+canvas.addEventListener("click", onClickHandler, false);
 
 draw();
 
