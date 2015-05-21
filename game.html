@@ -76,6 +76,42 @@
         &#x2b07;
       </div>
     </div>
+    <br />
+    <button id="editLevelButton"
+            type="button"
+            onclick="editLevel()">Edit level (Spoiler!)</button>
+    <div id="editLevel">
+      <p>
+        Paste your own levels here to play them! Note that the contents of this
+        box are not saved anywhere, so make sure to copy them into a text file.
+        See <a href="#buildingBlocks">below</a> for a list of available building
+        blocks.
+      </p>
+      <!-- TODO: wrap="off" is not valid HTML5, but there seems to be no other
+                 way to achieve the same effect. -->
+      <textarea id="levelText" wrap="off"></textarea>
+      <p id="errorMessage"></p>
+      <button type="button" onclick="playLevel()">Play!</button>
+      <table id="buildingBlocks" class="anchor">
+         <thead><th>Symbol</th><th>Level element</th></thead>
+         <tbody>
+           <tr><td>"S"</td><td>Starting position</td></tr>
+           <tr><td>" "</td><td>Empty square</td></tr>
+           <tr><td>"G"</td><td>Goal</td></tr>
+           <tr><td>"0" to "9"</td><td>Wall (different colors)</td></tr>
+           <tr><td>"k"</td><td>Silver key</td></tr>
+           <tr><td>"K"</td><td>Golden key</td></tr>
+           <tr><td>"h"</td><td>Silver lock</td></tr>
+           <tr><td>"H"</td><td>Golden lock</td></tr>
+           <tr><td>"r"</td><td>Red square</td></tr>
+           <tr><td>"g"</td><td>Green square</td></tr>
+           <tr><td>"s"</td><td>Red-green toggle switch</td></tr>
+           <tr><td>"k"</td><td>Silver key</td></tr>
+           <tr><td>"b"</td><td>Movable block</td></tr>
+           <tr><td>"B"</td><td>Block-sized hole</td></tr>
+         </tbody>
+      </table>
+    </div>
   </section>
   <script src="js/constants.js"></script>
   <script src="js/game.js"></script>

@@ -5,20 +5,30 @@ mazegame = {};
 
 /** Create a new maze from the given level string. */
 mazegame.Maze = function(level) {
+  level = level.replace(/\r|\n/g, "");
+  var errors = "";
+  var sepRe = /\+(\++)/;
   var size = [level.indexOf("+")];
-  size.push(Math.floor(level.indexOf("\n") / (size[0] + 1)));
-  size.push(Math.floor(
-        (level.search(/\+\+/) + 1) / ((size[0] + 1) * size[1] + 1)));
-  size.push(level.match(/\n\+\+/g).length);
+  size.push(Math.floor(sepRe.exec(level)[1].length / (size[0] + 1)));
+  size.push(Math.floor((level.search(sepRe) + 1) / (size[0] + 1) / size[1]));
+  size.push(Math.floor(level.length / (size[0] + 1) / (size[1] + 1) / size[2]));
   var level = level.replace(/\+/g, "").replace(/\n/g, "");
   var start_i = level.indexOf("S");
   var pos = [start_i % size[0],
              Math.floor(start_i / size[0]) % size[1],
              Math.floor(start_i / size[0] / size[1]) % size[2],
              Math.floor(start_i / size[0] / size[1] / size[2])];
-  var grid = level.split("").map(function(ch) { return TILE_MAP[ch]; });
+  var grid = level.split("").map(function(ch) {
+    if (!(ch in TILE_MAP)) {
+      errors += "Character '" + ch + "' is not a valid level element! ";
+      return EMPTY;
+    }
+    return TILE_MAP[ch];
+  });
   if (size[0] * size[1] * size[2] * size[3] != grid.length) {
-    alert("Level file corrupted!");
+    errors += "The level file is invalid! It's computed dimensions are "
+              + size[0] + " * " + size[1] + " * " + size[2] + " * " + size[3]
+              + ", but it contains " + grid.length + " blocks.";
   }
   var blocked = GREEN;
   var steps = 0;
@@ -170,7 +180,12 @@ mazegame.Maze = function(level) {
   /** Returns RED or GREEN, depending on which is currently blocked. */
   this.getBlocked = function() {
     return blocked;
-  }
+  };
+
+  /** Returns all error messages concerning the level file syntax. */
+  this.getErrors = function() {
+    return errors;
+  };
 }
 
 function toPx(xmin, xmaj) {
@@ -233,14 +248,31 @@ function draw() {
   }
 }
 
-function loadMaze() {
-  var levelFrame = document.getElementById("levelFile");
-  var contents = levelFrame.contentWindow.document.body.childNodes[0].innerHTML;
-  maze = new mazegame.Maze(contents.replace(/\r/g, ""));
+function editLevel() {
+  document.getElementById("editLevel").style.display = "block";
+  document.getElementById("editLevelButton").style.display = "none";
+}
+
+function playLevel() {
+  var levelTextarea = document.getElementById("levelText");
+  var contents = levelTextarea.value;
+  maze = new mazegame.Maze(contents);
+  var errorMessage = document.getElementById("errorMessage");
+  errorMessage.textContent = maze.getErrors();
   draw();
 }
 
+function loadMaze() {
+  var levelFrame = document.getElementById("levelFile");
+  var contents = levelFrame.contentWindow.document.body.childNodes[0].innerHTML;
+  var levelTextarea = document.getElementById("levelText");
+  levelTextarea.value = contents;
+  playLevel();
+}
+
 function loadLevel(filename) {
+  document.getElementById("editLevel").style.display = "none";
+  document.getElementById("editLevelButton").style.display = "inline-block";
   var levelFrame = document.getElementById("levelFile");
   levelFrame.src = filename;
 }
