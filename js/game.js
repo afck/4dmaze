@@ -111,6 +111,11 @@ mazegame.Maze = function(level) {
     steps++;
   };
 
+  /** Returns true if the given coordinate is zero modulo the grid size. */
+  this.isZero = function(x) {
+    return normalized(x).every(function(xi) { return xi == 0; });
+  };
+
   /** Tries to move the player in direction dx. */
   this.move = function(dx) {
     var x = sum(pos, dx);
@@ -214,7 +219,12 @@ function draw() {
           if (t == maze.getBlocked()) {
             t += 2;
           }
-          drawBlock(blocksImage, t, toPx(x0, x1), toPx(x2, x3));
+          var x = toPx(x0, x1);
+          var y = toPx(x2, x3);
+          drawBlock(blocksImage, t, x, y);
+          if (maze.isZero([x0, x1, x2, x3])) {
+            drawBlock(youImage, 0, x, y);
+          }
         }
       }
     }
@@ -229,8 +239,6 @@ function draw() {
   context.textBaseline = "top";
   context.fillStyle = "#000000";
   context.fillText(maze.getSteps() + " STEPS", toPx(VIEW + 1, VIEW), y);
-  // Player sprite
-  drawBlock(youImage, 0, toPx(0, 0), toPx(0, 0));
   // "Congrats" text
   if (maze.isWon()) {
     var x = toPx(0, 0) + BLOCK / 2;
