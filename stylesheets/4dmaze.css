@@ -39,7 +39,7 @@ div.controls div.arrow:hover {
   height: 400px;
   overflow: scroll;
   font: 14px monospace;
-  white-space: nowrap;
+  white-space: pre;
 }
 
 #editLevel {
