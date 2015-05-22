@@ -84,10 +84,7 @@
       <p>
         Paste your own levels here to play them! Note that the contents of this
         box are not saved anywhere, so make sure to copy them into a text file.
-        See <a href="#buildingBlocks">below</a> for a list of available building
-        blocks. In construction mode, you can solve the maze in reverse: Click
-        on an item in your inventory to put it on the map, if it is guaranteed
-        that the level remains solvable that way.
+        See <a href="#editInstructions">below</a> for instructions.
       </p>
       <!-- TODO: wrap="off" is not valid HTML5, but there seems to be no other
                  way to achieve the same effect. -->
@@ -100,23 +97,160 @@
       <button type="button" onclick="loadCurrent()">
         Load current state into the text field
       </button>
-      <table id="buildingBlocks" class="anchor">
+      <h2 id="editInstructions" class="anchor">
+        Instructions for level editing
+      </h2>
+      <p>
+        In construction mode, you can extend the maze by solving it reversely:
+        You can dig through walls, create pairs of locks and keys and other maze
+        elements; but it will only allow you to make changes that cannot make a
+        solvable maze unsolvable. E. g. if you move to the right and click on
+        the boulder in your inventory, it will create a boulder and a hole on
+        your left - you have just undone the action of pushing the boulder left
+        into the hole, so if the level was solvable in the previous state, it
+        still is now.
+      </p>
+      <p>
+        In the text area you can directly edit the level file. Remember that
+        this will not be saved on the server, so copy any work that you want to
+        preserve into a local text file! The available building blocks are:
+      </p>
+      <table>
          <thead><th>Symbol</th><th>Level element</th></thead>
          <tbody>
-           <tr><td>"S"</td><td>Starting position</td></tr>
-           <tr><td>" "</td><td>Empty square</td></tr>
-           <tr><td>"G"</td><td>Goal</td></tr>
-           <tr><td>"0" to "9"</td><td>Wall (different colors)</td></tr>
-           <tr><td>"k"</td><td>Silver key</td></tr>
-           <tr><td>"K"</td><td>Golden key</td></tr>
-           <tr><td>"h"</td><td>Silver lock</td></tr>
-           <tr><td>"H"</td><td>Golden lock</td></tr>
-           <tr><td>"r"</td><td>Red square</td></tr>
-           <tr><td>"g"</td><td>Green square</td></tr>
-           <tr><td>"s"</td><td>Red-green toggle switch</td></tr>
-           <tr><td>"k"</td><td>Silver key</td></tr>
-           <tr><td>"b"</td><td>Movable block</td></tr>
-           <tr><td>"B"</td><td>Block-sized hole</td></tr>
+           <tr>
+             <td>"S"</td>
+             <td><div class="img blockImg"
+                      style="background-position: 0px 0px;
+                             background-image: url('images/you.png');"></div>
+               &nbsp;Starting position</td>
+           </tr>
+           <tr>
+             <td>" "</td>
+             <td><div class="img blockImg"
+                      style="background-position: 0px 0px"></div>
+               &nbsp;Empty square</td>
+           </tr>
+           <tr>
+             <td>"G"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -336px 0px"></div>
+               &nbsp;Goal</td>
+           </tr>
+           <tr>
+             <td>"k"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -168px 0px"></div>
+               &nbsp;Silver key</td>
+           </tr>
+           <tr>
+             <td>"K"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -196px 0px"></div>
+               &nbsp;Golden key</td>
+           </tr>
+           <tr>
+             <td>"h"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -224px 0px"></div>
+               &nbsp;Silver lock</td>
+           </tr>
+           <tr>
+             <td>"H"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -252px 0px"></div>
+               &nbsp;Golden lock</td>
+           </tr>
+           <tr>
+             <td>"r"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -28px 0px"></div>
+               &nbsp;Red square (initially open)</td>
+           </tr>
+           <tr>
+             <td>"g"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -112px 0px"></div>
+               &nbsp;Green square (initially closed)</td>
+           </tr>
+           <tr>
+             <td>"s"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -140px 0px"></div>
+               &nbsp;Red-green toggle switch</td>
+           </tr>
+           <tr>
+             <td>"b"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -280px 0px"></div>
+               &nbsp;Movable boulder</td>
+           </tr>
+           <tr>
+             <td>"B"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -308px 0px"></div>
+               &nbsp;Boulder-sized hole</td>
+           </tr>
+           <tr>
+             <td>"0"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -364px 0px"></div>
+               &nbsp;Wall</td>
+           </tr>
+           <tr>
+             <td>"1"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -392px 0px"></div>
+               &nbsp;Wall</td>
+           </tr>
+           <tr>
+             <td>"2"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -420px 0px"></div>
+               &nbsp;Wall</td>
+           </tr>
+           <tr>
+             <td>"3"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -448px 0px"></div>
+               &nbsp;Wall</td>
+           </tr>
+           <tr>
+             <td>"4"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -476px 0px"></div>
+               &nbsp;Wall</td>
+           </tr>
+           <tr>
+             <td>"5"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -504px 0px"></div>
+               &nbsp;Wall</td>
+           </tr>
+           <tr>
+             <td>"6"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -532px 0px"></div>
+               &nbsp;Wall</td>
+           </tr>
+           <tr>
+             <td>"7"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -560px 0px"></div>
+               &nbsp;Wall</td>
+           </tr>
+           <tr>
+             <td>"8"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -588px 0px"></div>
+               &nbsp;Wall</td>
+           </tr>
+           <tr>
+             <td>"9"</td>
+             <td><div class="img blockImg"
+                      style="background-position: -616px 0px"></div>
+               &nbsp;Wall</td>
+           </tr>
          </tbody>
       </table>
     </div>

@@ -50,3 +50,15 @@ div.controls div.arrow:hover {
   color: #DD0000;
 }
 
+.img {
+  width: 28px;
+  height: 28px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+.blockImg {
+  background-image: url('../images/blocks.png');
+}
+
