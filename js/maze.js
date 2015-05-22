@@ -8,8 +8,8 @@ mazegame.Maze = function(level) {
   var size = [level.indexOf("+")];
   size.push(Math.floor(sepRe.exec(level)[1].length / (size[0] + 1)));
   size.push(Math.floor((level.search(sepRe) + 1) / (size[0] + 1) / size[1]));
-  size.push(Math.floor(level.length / (size[0] + 1) / (size[1] + 1) / size[2]));
-  var level = level.replace(/\+/g, "").replace(/\n/g, "");
+  var level = level.replace(/\+/g, "");
+  size.push(Math.floor(level.length / size[0] / size[1] / size[2]));
   var start_i = level.indexOf("S");
   var pos = [0, 0, 0, 0];
   if (start_i == -1) {
