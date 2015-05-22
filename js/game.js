@@ -114,10 +114,27 @@ mazegame.Maze = function(level) {
     return PASSABLE.indexOf(get(x)) != -1 && get(x) != blocked;
   };
 
+  /** Returns RED or GREEN: the color which is not currently blocked. */
+  var getOpenColor = function() {
+    return (blocked == RED) ? GREEN : RED;
+  };
+
+  var toggleRedGreen = function() {
+    blocked = getOpenColor();
+    if (reverseMode) {
+      inventory = inventory.map(function(item) {
+        if (item == blocked) {
+          return getOpenColor();
+        }
+        return item;
+      });
+    }
+  }
+
   /** Moves the player into position x, triggering switches if any. */
   var stepOnto = function(x) {
     if (get(x) == RGSWITCH) {
-      blocked = (blocked == RED) ? GREEN : RED;
+      toggleRedGreen();
     }
     pos = x;
     steps++;
@@ -136,14 +153,8 @@ mazegame.Maze = function(level) {
         set(x, EMPTY);
       }
       if (isPassable(x) || get(x) >= SOLIDBLOCK) {
-        if (get(pos) == RGSWITCH) {
-          blocked = (blocked == RED) ? GREEN : RED;
-          inventory = inventory.map(function(item) {
-            if (item == blocked) {
-              return (blocked == RED) ? GREEN : RED;
-            }
-            return item;
-          });
+        if (get(x) == RGSWITCH) {
+          toggleRedGreen();
         }
         pos = x;
         steps--;
@@ -154,6 +165,42 @@ mazegame.Maze = function(level) {
       pushObstacle(x, dx);
       if (isPassable(x)) {
         stepOnto(x);
+      }
+    }
+  };
+
+  /** Puts the given item into the maze in a way that guarantees that the
+   *  previous state can still be reached. */
+  this.dropFromInventory = function(i) {
+    if (!reverseMode) {
+      return;
+    }
+    var item = inventory[i];
+    if ([RGSWITCH, RED, GREEN, GOAL].concat(COLLECTIBLE).indexOf(item) != -1) {
+      if (get(pos) == EMPTY) {
+        set(pos, item);
+        if (COLLECTIBLE.indexOf(item) != -1) {
+          inventory.splice(i, 1);
+        } else if (item == RGSWITCH) {
+          toggleRedGreen();
+        }
+      }
+    } else if (previousDx != null) {
+      var prevPos = sum(pos, neg(previousDx));
+      if (get(prevPos) == EMPTY) {
+        if (item == SLOCK || item == GLOCK) {
+          set(prevPos, item);
+          inventory.push(CONSUME[item]);
+        } else if (item == MOVEBLOCK) {
+          var furtherPos = sum(prevPos, neg(previousDx));
+          if (get(furtherPos) == EMPTY || get(furtherPos) >= SOLIDBLOCK) {
+            set(prevPos, MOVEBLOCK);
+            set(furtherPos, MOVEHOLE);
+          } else if (get(furtherPos) == MOVEBLOCK) {
+            set(prevPos, MOVEBLOCK);
+            set(furtherPos, EMPTY);
+          }
+        }
       }
     }
   };
@@ -227,8 +274,8 @@ mazegame.Maze = function(level) {
   this.toggleReverseMode = function() {
     reverseMode = !reverseMode;
     if (reverseMode) {
-      inventory.splice(0, 0, SLOCK, GLOCK, RGSWITCH, MOVEBLOCK, GOAL,
-          blocked == RED ? GREEN : RED);
+      inventory.splice(
+          0, 0, SLOCK, GLOCK, RGSWITCH, MOVEBLOCK, GOAL, getOpenColor());
     } else {
       inventory = inventory.filter(function(i) {
         return i == GKEY || i == SKEY;
@@ -238,43 +285,6 @@ mazegame.Maze = function(level) {
 
   this.getReverseMode = function() {
     return reverseMode;
-  };
-
-  this.dropFromInventory = function(i) {
-    if (!reverseMode) {
-      return;
-    }
-    var item = inventory[i];
-    if ([RGSWITCH, RED, GREEN, GOAL].concat(COLLECTIBLE).indexOf(item) != -1) {
-      if (get(pos) == EMPTY) {
-        set(pos, item);
-        if (COLLECTIBLE.indexOf(item) != -1) {
-          inventory.splice(i, 1);
-        }
-      }
-    } else if (item == SLOCK || item == GLOCK) {
-      if (previousDx != null) {
-        var prevPos = sum(pos, neg(previousDx));
-        if (get(prevPos) == EMPTY) {
-          set(prevPos, item);
-          inventory.push(CONSUME[item]);
-        }
-      }
-    } else if (item == MOVEBLOCK) {
-      if (previousDx != null) {
-        var prevPos = sum(pos, neg(previousDx));
-        var furtherPos = sum(prevPos, neg(previousDx));
-        if (get(prevPos) == EMPTY) {
-          if (get(furtherPos) == EMPTY || get(furtherPos) >= SOLIDBLOCK) {
-            set(prevPos, MOVEBLOCK);
-            set(furtherPos, MOVEHOLE);
-          } else if (get(furtherPos) == MOVEBLOCK) {
-            set(prevPos, MOVEBLOCK);
-            set(furtherPos, EMPTY);
-          }
-        }
-      }
-    }
   };
 
   /** Returns the current state of the game as a level file. */
@@ -292,6 +302,8 @@ mazegame.Maze = function(level) {
       ch_map[TILE_MAP[ch]] = ch;
     }
     ch_map[EMPTY] = " ";
+    ch_map[blocked] = "g";
+    ch_map[getOpenColor()] = "r";
     for (var x3 = 0; x3 < size[3]; x3++) {
       for (var x2 = 0; x2 < size[2]; x2++) {
         for (var x1 = 0; x1 < size[1]; x1++) {
