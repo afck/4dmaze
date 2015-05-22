@@ -1,3 +1,14 @@
+var KEY_CODE = {
+  W: 87,
+  A: 65,
+  S: 83,
+  D: 68,
+  I: 73,
+  J: 74,
+  K: 75,
+  L: 76,
+};
+
 var DIR_MAP = {
   87: [0, 0, -1, 0], // W -> minor-up
   65: [-1, 0, 0, 0], // A -> minor-left
@@ -11,7 +22,7 @@ var DIR_MAP = {
   37: [0, -1, 0, 0], // left arrow  -> major-left
   40: [0, 0, 0, 1],  // down arrow  -> major-down
   39: [0, 1, 0, 0],  // right arrow -> major-right
-}
+};
 
 var BLOCK = 28;
 var SPACING = 10;

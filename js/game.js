@@ -35,7 +35,10 @@ function draw() {
     return; // Not yet loaded.
   }
   //Clear canvas
-  context.fillStyle = "#444488";
+  var gradient = context.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, "rgb(0, 64, 192)");
+  gradient.addColorStop(1, "rgb(0, 0, 64)");
+  context.fillStyle = gradient;
   context.fillRect(0, 0, canvas.width, canvas.height);
   // The maze
   for (var x0 = -VIEW; x0 <= VIEW; x0++) {
@@ -64,7 +67,7 @@ function draw() {
   context.textAlign="right";
   context.font = "bold 30px sans-serif";
   context.textBaseline = "top";
-  context.fillStyle = "#000000";
+  context.fillStyle = "rgb(192, 192, 192)";
   context.fillText(maze.getSteps() + " STEPS", toPx(VIEW + 1, VIEW), y);
   // "Congrats" text
   if (maze.isWon() && !maze.getReverseMode()) {
@@ -73,13 +76,37 @@ function draw() {
     context.textAlign="center";
     context.font = "bold 50px sans-serif";
     context.textBaseline = "middle";
-    context.fillStyle = "#000000";
+    context.fillStyle = "rgb(0, 0, 0)";
     context.fillText(WIN_TEXT, x + 2, y + 5);
-    context.fillStyle = "#FFFFFF";
+    context.fillStyle = "rgb(255, 255, 255)";
     context.fillText(WIN_TEXT, x, y);
     context.lineWidth = 2;
-    context.strokeStyle = "#004488";
+    context.strokeStyle = "rgb(0, 64, 128)";
     context.strokeText(WIN_TEXT, x, y);
+  }
+}
+
+function drawHelp() {
+  for (k in KEY_CODE) {
+    var dx = DIR_MAP[KEY_CODE[k]];
+    var x = toPx(dx[0], dx[1]) + BLOCK / 2;
+    var y = toPx(dx[2], dx[3]) + BLOCK / 2;
+    var gradient = context.createRadialGradient(x, y, 0, x, y, BLOCK);
+    gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
+    gradient.addColorStop(0.5, "rgba(255, 255, 255, 0.5)");
+    gradient.addColorStop(1, "rgba(255, 255, 255, 0.0)");
+    context.fillStyle = gradient;
+    context.beginPath();
+    context.arc(x, y, BLOCK, 0, 2 * Math.PI);
+    context.fill();
+    context.textAlign="center";
+    context.textBaseline = "middle";
+    context.font = "bold 30px sans-serif";
+    context.fillStyle = "rgb(0, 0, 0)";
+    context.fillText(k, x, y + 3);
+    context.lineWidth = 1;
+    context.strokeStyle = "rgb(0, 0, 192)";
+    context.strokeText(k, x, y + 3);
   }
 }
 
@@ -121,12 +148,16 @@ function keyDownHandler(event) {
   }
   if (event.keyCode in DIR_MAP) {
     maze.move(DIR_MAP[event.keyCode]);
+    draw();
   } else switch (event.keyCode) {
     case 32: // Space
       maze.shuffle();
+      draw();
       break;
+    case 72: // H
+      draw();
+      drawHelp();
   }
-  draw();
 }
 
 // Configure canvas.
