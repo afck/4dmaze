@@ -21,6 +21,12 @@ div.controls div.arrow {
   border-radius: 0.3rem;
 }
 
+@media only screen and (min-device-width: 760px) {
+  div.controls {
+    display: none;
+  }
+}
+
 div.controls div.arrow:hover {
   background-color: #CCCCCC;
 }
