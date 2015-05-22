@@ -1,4 +1,4 @@
-div.controls {
+#game > canvas, #game > .controls {
   text-align: center;
 }
 
@@ -29,10 +29,6 @@ div.controls div.arrow {
 
 div.controls div.arrow:hover {
   background-color: #CCCCCC;
-}
-
-#game > canvas, #game > .controls {
-  text-align: center;
 }
 
 #game canvas {

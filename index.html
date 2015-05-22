@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/4dmaze.css" media="screen">
   </head>
   <body>
     <section class="page-header">
@@ -22,69 +23,68 @@
       <h1>
 <a id="yet-another-4d-maze-game" class="anchor" href="#yet-another-4d-maze-game" aria-hidden="true"><span class="octicon octicon-link"></span></a>Yet another 4D Maze game</h1>
 
-<p>These are the SDL 2 and JavaScript ports of a four-dimensional maze game I
-rediscovered. I had written it over a decade ago in undecipherable C ...</p>
-
-
-<h2>
-<a id="build-it" class="anchor" href="#build-it" aria-hidden="true">
-  <span class="octicon octicon-link"></span></a>Build it</h2>
-
-<p>Most users can skip this section and only read the explanation below, then
-head straight to the <a href="game.html">JavaScript version</a> and play in the
-browser.</p>
-
-<p>If you have <a href="https://gcc.gnu.org/">GCC</a> and
-<a href="http://www.libsdl.org/">SDL 2</a> installed on a Linux system,</p>
-
-<div class="highlight highlight-sh"><pre>make</pre></div>
-
-<p>should create a binary file called maze.</p>
-
-<p>If that doesn't work, you will have to wait until it has a proper Makefile (or
-help me out and create one).</p>
+<p>This is a four-dimensional maze game you can
+<a href="game.html">play in your web browser</a>.</p>
 
 
 <h2>
 <a id="understand-it" class="anchor" href="#understand-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Understand it</h2>
 
-<p>If you wanted to view a building with several floors in a tile-based game on a
-two-dimensional monitor, you might show the different floors on top of each
-other.
-Thus left and right on your screen would always correspond to west and east, but
-up and down would correspond to north and south within each floor, but to the
-actual elevation, the "real up" and "real down", if you move between floors.
-So we'd use the vertical screen dimension twice: Moving one tile up or down
-means moving north or south within a floor, but moving up or down to a different
-floor map means going up or down the stairs. We have split the meaning of the
-vertical dimension into two parts: "minor up/down" for north and south and
-"major up/down" for one floor up and one floor down, and that gave us the means
-to display a three-dimensional world.
-Now, if the building is big, we'll neither be able to show a complete floor, nor
-to show all the floors. We would only show the floor with the player inside it,
-and maybe two above and two below. And within each floor, we would only show the
-tile with the player on it and maybe two more rows of tiles to the north, south,
-east and west. If we moved the player, the view would scroll accordingly.</p>
+<img src="images/screenshot2d.png" style="float: left"/>
+<p>In a two-dimensional tile-based game, you have four directions to go: north,
+west, south and east. We use the W, A, S and D keys for these.</p>
 
-<p>This game takes place in a four-dimensional world, so we do the same trick that
-gave us two model dimensions for the vertical screen dimension with the
-horizontal screen dimension, too! You could think of it as a building where the
-floors aren't numbered with just one but two numbers: From floor (0, 0) you can
-either go up to floor (1, 0), or you can go "the other up" to (0, 1).</p>
+<img src="images/screenshot3d.png" style="float: right"/>
+<p>If the game has a third dimension, e. g. because it takes place in a building
+with several floors where every tile has staircases up and down, we would display
+each floor as its own grid, and stack the grids on top of each other. We use the
+I and K keys to go up and down.<p>
 
-<p>Instead of shaky metaphors with floors and buildings, however, we will just
-stick to what we see on the screen now and call the four dimensions
-"minor horizontal", "major horizontal", "minor vertical" and "major vertical".</p>
+<p>In this mode of display, the vertical <em>screen</em> dimension now
+corresponds to two <em>game</em> dimensions: north/south and up/down. If you
+go <em>north</em>, you go up on the screen by the height of one tile, and if you
+go <em>up</em> to the next floor, you go up on the screen by the height of one
+floor grid. We display <em>north</em> as "minor up", so to speak, and
+<em>up</em> as "major up".</p>
 
+<p>This game has four dimensions, so we need to display two additional
+directions in which you can move, let's call them
+<a href="https://en.wikipedia.org/wiki/Four-dimensional_space#Orthogonality_and_vocabulary">
+ana and kata
+</a>. Just as above you there's a parallel floor, with one particular tile right
+above your head and accessible via a staircase, there is a complete
+three-dimensional parallel building ana of this one, with one tile right next to
+you in the ana direction, accessible via some magic portal. And just like there
+is a floor below you, there is a parallel building kata of you.</p>
+
+<p>To display the fourth dimension, we use the same trick that allowed us to
+show both north/south and up/down as the vertical screen dimension: We put the
+ana parallel building on the left and the kata one on the right, so that the
+horizontal screen dimension now corresponds both to east/west and to ana/kata.
+"Minor left" is west, and "major left" is ana. You can move ana with J and kata
+with L.</p>
+
+<img src="images/screenshot4d.png" style="float: left"/>
+<p>There's no gravity in this maze, so you don't need staircases. In fact, we
+treat all four dimensions completely equally: Going up isn't more difficult than
+going west. And since ana is just another direction, we don't need a magic
+portal to go there - after all, you also don't need a magic portal to go north!
+The tile you are standing on simply has eight directly adjacent tiles (not
+diagonally!) and you can move in any of the eight directions unless an obstacle
+is blocking your path.</p>
+
+<img src="images/screenshot2dwrap.png" style="float: right"/>
 <p>That's almost all you need to know about the geometry of the maze: The game is
 tile-based, takes place in a four-dimensional hyper-rectangularly shaped grid
 and allows you to move in eight directions between adjacent tiles. But one more
-thing: The maze wraps around! That is, if you leave the maze on one side, you
-enter it from the other side, just like in Pac-Man. Or equivalently: On each
-side of the maze there's an identical copy of itself, creating an infinite
-tiling of the four-dimensional grid. You won't notice when you wrap around that
-way, though, as you are always displayed in the middle of the screen and the
-maze scrolls around you.</p>
+thing: The maze wraps around! That is, if you leave it on one side, you
+enter it from the other side, just like in Pac-Man. You won't notice when you
+wrap around that way, though, as you are always displayed in the middle of the
+screen and the maze scrolls around you. If the maze is only three tiles wide in
+the north/south direction, you might see the same key twice: one tile to the
+north of yourself, and two tiles south of yourself. And if it is only two tiles
+wide in the east/west direction, you will see the square you are standing on,
+right beyond the one next to you!</p>
 
 
 <h2>
@@ -98,12 +98,6 @@ of the eight directions, you can see two tiles ahead. You can move around using
 these keys:</p>
 
 <table>
-<thead>
-<tr>
-<th>key</th>
-<th>action</th>
-</tr>
-</thead>
 <tbody>
 <tr>
 <td>W</td>
@@ -141,24 +135,43 @@ these keys:</p>
 <td>space</td>
 <td>shuffle dimensions (i. e. rotate randomly for added confusion)</td>
 </tr>
-<tr>
-<td>escape</td>
-<td>exit</td>
-</tr>
 </tbody>
 </table>
 
-<p>Your goal is to reach the goal, which is shown as a rainbow-colored sphere. On
-your way, you will find a few special items:</p>
+<p>Your goal is to reach the goal:
+<span class="img blockImg" style="background-position: -336px 0px"></span>.
+On your way, you will find a few special items:</p>
 
 <ul>
-<li>A silver key allows you to remove one silver lock.</li>
-<li>A gold key allows you to remove one golden lock.</li>
-<li>There are some stones that can be pushed around.</li>
-<li>There are stone-shaped holes that can only be removed by pushing a stone into
-them.</li>
-<li>Yin-yang-shaped switches toggle whether the red or the green tiles can be
-passed.</li>
+<li>A silver key 
+  <span class="img blockImg" style="background-position: -168px 0px"></span>
+  allows you to remove one silver lock
+  <span class="img blockImg" style="background-position: -224px 0px"></span>.
+</li>
+<li>A golden key 
+  <span class="img blockImg" style="background-position: -196px 0px"></span>
+  allows you to remove one golden lock
+  <span class="img blockImg" style="background-position: -252px 0px"></span>.
+</li>
+<li>
+  There are boulders
+  <span class="img blockImg" style="background-position: -280px 0px"></span>
+  that can be pushed around,
+</li>
+<li>
+  and boulder-shaped holes
+  <span class="img blockImg" style="background-position: -308px 0px"></span>
+  that can only be removed by pushing a boulder into them.
+</li>
+<li>
+  Switches
+  <span class="img blockImg" style="background-position: -140px 0px"></span>
+  toggle whether the red
+  <span class="img blockImg" style="background-position: -28px 0px"></span>
+  or the green tiles
+  <span class="img blockImg" style="background-position: -112px 0px"></span>
+  can be passed.
+</li>
 </ul>
 
 <p><a href="game.html">Good luck, and don't get lost in hyperspace!</a></p>
