@@ -1,3 +1,5 @@
+"use strict";
+
 var KEY_CODE = {
   W: 87,
   A: 65,
@@ -28,6 +30,7 @@ var BLOCK = 28;
 var SPACING = 10;
 var VIEW = 2;
 var DIAMETER = 2 * VIEW + 1;
+var SIZE = 760;
 
 var EMPTY = 0;
 var RED = 1;

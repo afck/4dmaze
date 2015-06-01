@@ -1,4 +1,6 @@
-mazegame = {};
+"use strict";
+
+var mazegame = {};
 
 /** Create a new maze from the given level string. */
 mazegame.Maze = function(level) {
