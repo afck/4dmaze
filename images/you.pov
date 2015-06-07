@@ -32,14 +32,7 @@ sphere {
 object { Eye rotate <25, 25, 0> translate <1/2, 1/2, 0> }
 object { Eye scale <-1, 1, 1> rotate <25, -25, 0> translate <1/2, 1/2, 0> }
 sphere {
-	<1/2, 1/2, -1/2-1/10>, 1/10
-	pigment { rgb <1, 0, 0> }
+	<1/2, 0.45, -0.52>, 1/10
+	pigment { rgb <1, 0.5, 0> }
 	finish { Standard_Finish }
-}
-sphere {
-	<0, 0, 0>, 1/2
-	pigment { rgb <0, 0, 0.3> }
-	finish { Standard_Finish }
-	scale <3/4, 3/4, 1/54>
-	translate <1/2, 1/2-1/14, -1/3>
 }

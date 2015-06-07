@@ -1,5 +1,6 @@
 #include "game.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #define BLOCK 28
 #define ORIGINX 134
@@ -126,9 +127,10 @@ int main(int argc, char **argv) {
   SDL_Init(SDL_INIT_VIDEO);
   SDL_CreateWindowAndRenderer(SCREENW, SCREENH, 0, &window, &renderer);
   screen = SDL_GetWindowSurface(window);
-  mazeImg = SDL_LoadBMP("images/4dmaze.bmp");
-  youImg = SDL_LoadBMP("images/you.bmp");
-  numImg = SDL_LoadBMP("images/numbers.bmp");
+  mazeImg = IMG_Load("images/4dmaze.png");
+  SDL_SetSurfaceBlendMode(mazeImg, SDL_BLENDMODE_NONE);
+  youImg = IMG_Load("images/you.png");
+  numImg = IMG_Load("images/numbers.png");
   SDL_SetColorKey(youImg, SDL_TRUE, SDL_MapRGB(youImg->format, 0, 0, 0));
   SDL_SetColorKey(numImg, SDL_TRUE, SDL_MapRGB(numImg->format, 1, 1, 0));
   SDL_ShowCursor(SDL_DISABLE);

@@ -20,7 +20,7 @@ box {
 
 #macro Text(text_string, number, text_color1, text_color2)
 text {
-	ttf "/usr/lib/X11/fonts/TTF/luxisb.ttf" text_string, 1, 0
+	ttf "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans-Bold.ttf" text_string, 1, 0
 	pigment {
 		spotted
 		frequency 2
