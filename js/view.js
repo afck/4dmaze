@@ -16,23 +16,15 @@ mazegame.View = function(canvas, size) {
   var scaleFn = SCALE_FN[3];
   var scale = 0.5;
   var scaleMax = null;
-
-  var toPx = function(xmin, xmaj) {
-    return (xmin + VIEW) * BLOCK
-        + (DIAMETER * BLOCK + SPACING) * (xmaj + VIEW)
-        + SPACING;
-  };
+  var scaleSpacingMin = 0.05;
+  var scaleSpacingMaj = 0.01;
 
   this.setScaleFn = function(opt_i, opt_mult) {
-    if (opt_mult) {
-      scale *= opt_mult;
-    }
-    if (opt_i in SCALE_FN) {
-      scaleFn = SCALE_FN[opt_i];
-    }
-    scaleMax = 1;
+    scale *= opt_mult || 1;
+    scaleFn = SCALE_FN[opt_i] || scaleFn;
+    scaleMax = 2;
     while (Math.abs(scaleFn(scale * (scaleMax + 0.5))
-          - scaleFn(scale * (scaleMax + 1.5))) > 2) {
+          - scaleFn(scale * (scaleMax + 1.5))) > 0.03) {
       scaleMax++;
     }
     this.drawBackground();
@@ -40,20 +32,24 @@ mazegame.View = function(canvas, size) {
   }
 
   var coords = function(t0, t1) {
-    var bl = function(t) { return [scaleFn(scale * (t - 0.5)),
-                                   scaleFn(scale * (t + 0.5))]; };
-    var inner = bl(t0);
-    inner = [inner[0] * 0.47 + 0.5, inner[1] * 0.47 + 0.5];
-    var outer = bl(t1);
-    var toScr = function(t) { return Math.round(size * (t + 1) / 2); };
-    return [toScr(inner[0] * outer[1] + (1 - inner[0]) * outer[0]),
-            toScr(inner[1] * outer[1] + (1 - inner[1]) * outer[0])];
+    var bl = function(t, m) { return [
+      (scaleFn(scale * (t - 0.5)) * m + 1) / 2,
+      (scaleFn(scale * (t + 0.5)) * m + 1) / 2
+    ]; };
+    var min = bl(t0, 1 - scaleSpacingMin);
+    var maj = bl(t1, 1 - scaleSpacingMaj);
+    return [Math.round(size * (min[0] * maj[1] + (1 - min[0]) * maj[0])),
+            Math.round(size * (min[1] * maj[1] + (1 - min[1]) * maj[0]))];
   };
 
-  var drawTile = function(img, t, x) {
+  var drawTile = function(img, t, x, opt_bg) {
     var xc = coords(x[0], x[1]);
     var yc = coords(x[2], x[3]);
-    context.drawImage(img, t * BLOCK, 0, BLOCK - 0.5, BLOCK,
+    if (opt_bg === true) {
+      context.fillStyle = "black";
+      context.fillRect(xc[0], yc[0], xc[1] - xc[0], yc[1] - yc[0]);
+    }
+    context.drawImage(img, t * img.height, 0, img.height, img.height,
                       xc[0], yc[0], xc[1] - xc[0], yc[1] - yc[0]);
   };
 
@@ -100,7 +96,8 @@ mazegame.View = function(canvas, size) {
       // Status bar
       var y = size + SPACING;
       maze.getInventory().forEach(function(t, i) {
-        context.drawImage(blocksImage, t * BLOCK, 0, BLOCK, BLOCK,
+        var unit = blocksImage.height;
+        context.drawImage(blocksImage, t * unit, 0, unit, unit,
                                        SPACING + i * BLOCK, y, BLOCK, BLOCK);
       });
       context.textAlign="right";
@@ -113,24 +110,24 @@ mazegame.View = function(canvas, size) {
     var x = opt_x || [0, 0, 0, 0];
     window.clearTimeout(drawId);
     drawId = window.setTimeout(this.draw.bind(this), 0, x);
-    while (performance.now() < time + 20 && x[0] > -10) {
+    while (performance.now() < time + 20 && x[0] >= -scaleMax) {
       var t = maze.getRel(x);
       if (t == maze.getBlocked()) {
         t += 2;
       }
-      drawTile(blocksImage, t, x);
+      drawTile(blocksImage, t, x, true);
       if (maze.isZero(x)) {
         drawTile(youImage, 0, x);
       }
       increment(x);
     }
-    if (x[0] <= -10) {
+    if (x[0] < -scaleMax) {
       window.clearTimeout(drawId);
     }
     // "Congrats" text
     if (maze.isWon() && !maze.getReverseMode()) {
-      var x = toPx(0, 0) + BLOCK / 2;
-      var y = toPx(0, 0) + BLOCK / 2;
+      var x = SIZE / 2;
+      var y = SIZE / 2;
       context.textAlign="center";
       context.font = "bold 50px sans-serif";
       context.textBaseline = "middle";
@@ -164,13 +161,14 @@ mazegame.View = function(canvas, size) {
       var yRange = coords(dx[2], dx[3]);
       var x = (xRange[0] + xRange[1]) / 2;
       var y = (yRange[0] + yRange[1]) / 2;
-      var gradient = context.createRadialGradient(x, y, 0, x, y, BLOCK);
+      var r = Math.abs(xRange[1] - xRange[0]);
+      var gradient = context.createRadialGradient(x, y, 0, x, y, r);
       gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
       gradient.addColorStop(0.5, "rgba(255, 255, 255, 0.5)");
       gradient.addColorStop(1, "rgba(255, 255, 255, 0.0)");
       context.fillStyle = gradient;
       context.beginPath();
-      context.arc(x, y, BLOCK, 0, 2 * Math.PI);
+      context.arc(x, y, r, 0, 2 * Math.PI);
       context.fill();
       context.textAlign="center";
       context.textBaseline = "middle";
