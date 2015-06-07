@@ -39,6 +39,7 @@ mazegame.Maze = function(level) {
   var inventory = [];
   var reverseMode = false;
   var previousDx = null;
+  var won = false;
 
   /** Returns the value between 0 and m-1 that is equal to x modulo m. */
   var mod = function(x, m) {
@@ -134,6 +135,8 @@ mazegame.Maze = function(level) {
   var stepOnto = function(x) {
     if (get(x) == RGSWITCH) {
       toggleRedGreen();
+    } else if (GOAL == get(x)) {
+      won = true;
     }
     pos = x;
     steps++;
@@ -247,7 +250,7 @@ mazegame.Maze = function(level) {
 
   /** Returns true if the player is in the goal. */
   this.isWon = function() {
-    return GOAL == get(pos);
+    return won;
   };
 
   /** Returns the number of steps taken so far. */
@@ -326,4 +329,5 @@ mazegame.Maze = function(level) {
     }
     return level;
   };
-}
+};
+

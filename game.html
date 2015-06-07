@@ -91,7 +91,7 @@
       <textarea id="levelText" wrap="off"></textarea>
       <p id="errorMessage"></p>
       <button type="button" onclick="playLevel()">Play!</button>
-      <button type="button" onclick="maze.toggleReverseMode(); draw();">
+      <button type="button" onclick="maze.toggleReverseMode(); view.draw();">
         Toggle construction mode
       </button>
       <button type="button" onclick="loadCurrent()">
@@ -257,6 +257,7 @@
   </section>
   <script src="js/constants.js"></script>
   <script src="js/maze.js"></script>
+  <script src="js/view.js"></script>
   <script src="js/game.js"></script>
   <iframe id="levelFile"
           src="mazes/0.txt"
