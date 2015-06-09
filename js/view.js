@@ -40,10 +40,8 @@ mazegame.View = function(canvas, size) {
   };
 
   var coords = function(t0, t1) {
-    var bl = function(t, m) { return [
-      (scaleFn(scale * (t - 0.5)) * m + 1) / 2,
-      (scaleFn(scale * (t + 0.5)) * m + 1) / 2
-    ]; };
+    var fn = function(t, m) { return 0.5 * (scaleFn(scale * t) * m + 1); };
+    var bl = function(t, m) { return [fn(t - 0.5, m), fn(t + 0.5, m)]; };
     var min = bl(t0, 1 - scaleSpacingMin);
     var maj = bl(t1, 1 - scaleSpacingMaj);
     return [Math.round(size * (min[0] * maj[1] + (1 - min[0]) * maj[0])),
@@ -64,6 +62,23 @@ mazegame.View = function(canvas, size) {
                       xc[0], yc[0], xc[1] - xc[0], yc[1] - yc[0]);
   };
 
+  var increment = function(x) {
+    var sorted = x.map(Math.abs).sort();
+    var m = sorted[3]; // Max abs value
+    if (sorted[2] != m && x[0] == -m) {
+      x[0] = m;
+    } else {
+      var i;
+      for (i = 0; i < 4 && x[i] == m; i++) { x[i] = -m; }
+      if (i < 4) {
+        x[i]++;
+      } else {
+        for (i = 0; i < 4; i++) { x[i] -= 1; }
+      }
+    }
+    return x;
+  };
+
   var drawId = null;
 
   this.draw = function(opt_x) {
@@ -71,37 +86,6 @@ mazegame.View = function(canvas, size) {
       return; // Not yet loaded.
     }
     var time = performance.now();
-
-    var increment = function(x) {
-      var m = 0; // Max abs value
-      var c = 0; // Number of occurrences of m.
-      for (var i = 0; i < 4; i++) {
-        var a = Math.abs(x[i]);
-        if (a == m) {
-          c++;
-        } else if (a > m) {
-          c = 1;
-          m = a;
-        }
-      }
-      if (c == 1 && x[0] == -m) {
-        x[0] = m;
-        return x;
-      }
-      for (var i = 0; i < 4; i++) {
-        if (x[i] == m) {
-          x[i] = -m;
-        } else {
-          x[i]++;
-          return x;
-        }
-      }
-      for (var i = 0; i < 4; i++) {
-        x[i] -= 1;
-      }
-      return x;
-    };
-
     if (!opt_x) {
       this.drawBackground(true);
       // Status bar
