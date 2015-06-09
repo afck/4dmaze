@@ -329,7 +329,7 @@ mazegame.Maze = function(level) {
     }
     var level = "";
     var ch_map = {};
-    for (ch in TILE_MAP) {
+    for (var ch in TILE_MAP) {
       ch_map[TILE_MAP[ch]] = ch;
     }
     ch_map[EMPTY] = " ";
