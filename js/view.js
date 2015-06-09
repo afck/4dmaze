@@ -35,7 +35,7 @@ mazegame.View = function(canvas, size) {
   };
 
   this.multScale = function(s) {
-    scale *= s;
+    scale = Math.min(1.5, Math.max(0.3, scale * s));
     scaleChanged();
   };
 
