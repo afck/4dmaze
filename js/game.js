@@ -67,6 +67,12 @@ function keyDownHandler(event) {
     case 72: // H
       view.drawHelp();
       break;
+    case 90: // Z
+      if (event.ctrlKey && !event.shiftKey) {
+        maze.undo();
+        view.draw();
+      }
+      break;
     case 48: // 0
     case 49: // 1
     case 50: // 2

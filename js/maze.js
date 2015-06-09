@@ -40,6 +40,7 @@ mazegame.Maze = function(level) {
   var reverseMode = false;
   var previousDx = null;
   var won = false;
+  var history = [];
 
   /** Returns the value between 0 and m-1 that is equal to x modulo m. */
   var mod = function(x, m) {
@@ -135,11 +136,11 @@ mazegame.Maze = function(level) {
   var stepOnto = function(x) {
     if (get(x) == RGSWITCH) {
       toggleRedGreen();
-    } else if (GOAL == get(x)) {
+    } else if (!reverseMode && GOAL == get(x)) {
       won = true;
     }
     pos = x;
-    steps++;
+    steps += reverseMode ? (-1) : 1;
   };
 
   /** Returns true if the given coordinate is zero modulo the grid size. */
@@ -147,27 +148,55 @@ mazegame.Maze = function(level) {
     return normalized(x).every(function(xi) { return xi == 0; });
   };
 
+  /** Creates a new history entry to undo moving in the given direction. */
+  var newHistoryEntry = function(dx) {
+    var x = sum(pos, neg(dx));
+    var fields = [];
+    for (var i = 0; i < 4; i++) {
+      fields.push(get(x));
+      x = sum(x, dx);
+    }
+    return {
+      dx: dx,
+      fields: fields,
+      steps: steps,
+      inventory: inventory.filter(function(i) {
+        return COLLECTIBLE.indexOf(i) != -1;
+      }),
+    };
+  };
+
+  /** Undoes the previous action. */
+  this.undo = function() {
+    var he = history.pop();
+    if (he) {
+      pos = sum(pos, neg(he.dx));
+      var x = sum(pos, neg(he.dx));
+      for (var i = 0; i < 4; i++) {
+        set(x, he.fields[i]);
+        x = sum(x, he.dx);
+      }
+      inventory = he.inventory;
+      this.toggleReverseMode();
+      this.toggleReverseMode();
+      steps = he.steps;
+    }
+  };
+
   /** Tries to move the player in direction dx. */
   this.move = function(dx) {
+    var he = newHistoryEntry(dx);
     var x = sum(pos, dx);
     if (reverseMode) {
-      if (get(x) >= SOLIDBLOCK) {
-        set(x, EMPTY);
-      }
-      if (isPassable(x) || get(x) >= SOLIDBLOCK) {
-        if (get(x) == RGSWITCH) {
-          toggleRedGreen();
-        }
-        pos = x;
-        steps--;
-        previousDx = dx;
-      }
+      if (get(x) >= SOLIDBLOCK) { set(x, EMPTY); }
     } else {
       grabObstacle(x);
       pushObstacle(x, dx);
-      if (isPassable(x)) {
-        stepOnto(x);
-      }
+    }
+    if (isPassable(x)) {
+      stepOnto(x);
+      previousDx = dx;
+      history.push(he);
     }
   };
 
