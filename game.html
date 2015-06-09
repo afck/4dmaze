@@ -29,6 +29,16 @@
     <canvas id="mazeCanvas" onclick="onClickHandler">
       Your browser does not support HTML5. Please upgrade.
     </canvas>
+    <p class="viewcontrols">Scale:
+      <a onclick="view.multScale(1.1)">[+]</a>
+      <a onclick="view.multScale(1 / 1.1)">[-]</a>
+      &nbsp;
+      Mode:
+      <a onclick="view.setScaleFn(0)">[flat]</a>
+      <a onclick="view.setScaleFn(1)">[1]</a>
+      <a onclick="view.setScaleFn(2)">[2]</a>
+      <a onclick="view.setScaleFn(3)">[3]</a>
+    <p>
     <div class="controls">
       <div onclick="maze.move([0, 0, 0, -1]); view.draw();"
            class="arrow"

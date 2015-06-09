@@ -64,3 +64,10 @@ div.controls div.arrow:hover {
   background-image: url('../images/blocks.png');
 }
 
+.viewcontrols {
+  font-size: small;
+}
+
+.viewcontrols > a {
+  cursor: pointer;
+}

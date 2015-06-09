@@ -7,21 +7,19 @@ mazegame.View = function(canvas, size) {
   var context = canvas.getContext("2d");
 
   var SCALE_FN = [
+    function(t) { return Math.min(1, Math.max(-1, 2 * t / (VIEW + 0.5))); },
     function(t) { return t / Math.sqrt(1 + t * t); },
     function(t) { return (Math.exp(2 * t) - 1) / (Math.exp(2 * t) + 1); },
     function(t) { return t / Math.sqrt(Math.sqrt(1 + t * t * t * t)); },
-    function(t) { return Math.min(1, Math.max(-1, 2 * t / (VIEW + 0.5))); },
   ];
 
-  var scaleFn = SCALE_FN[3];
+  var scaleFn = SCALE_FN[0];
   var scale = 0.5;
   var scaleMax = null;
   var scaleSpacingMin = 0.05;
   var scaleSpacingMaj = 0.01;
 
-  this.setScaleFn = function(opt_i, opt_mult) {
-    scale *= opt_mult || 1;
-    scaleFn = SCALE_FN[opt_i] || scaleFn;
+  var scaleChanged = function() {
     scaleMax = 2;
     while (Math.abs(scaleFn(scale * (scaleMax + 0.5))
           - scaleFn(scale * (scaleMax + 1.5))) > 0.03) {
@@ -29,7 +27,17 @@ mazegame.View = function(canvas, size) {
     }
     this.drawBackground();
     this.draw();
-  }
+  }.bind(this);
+
+  this.setScaleFn = function(i) {
+    scaleFn = SCALE_FN[i] || scaleFn;
+    scaleChanged();
+  };
+
+  this.multScale = function(s) {
+    scale *= s;
+    scaleChanged();
+  };
 
   var coords = function(t0, t1) {
     var bl = function(t, m) { return [
@@ -49,7 +57,10 @@ mazegame.View = function(canvas, size) {
       context.fillStyle = "black";
       context.fillRect(xc[0], yc[0], xc[1] - xc[0], yc[1] - yc[0]);
     }
-    context.drawImage(img, t * img.height, 0, img.height, img.height,
+    // Workaround for Firefox drawImage scaling bug:
+    // https://stackoverflow.com/questions/17725840
+    var w = img.height - ((xc[1] - xc[0] > img.height) ? 0.5 : 0);
+    context.drawImage(img, t * img.height, 0, w, img.height,
                       xc[0], yc[0], xc[1] - xc[0], yc[1] - yc[0]);
   };
 
@@ -200,7 +211,7 @@ mazegame.View = function(canvas, size) {
     }
     return null;
   };
-  
+
   // Load graphics.
   var youImage = new Image();
   var blocksImage = new Image();
@@ -209,5 +220,5 @@ mazegame.View = function(canvas, size) {
   youImage.src = "images/you.png";
   blocksImage.src = "images/blocks.png";
 
-  this.setScaleFn();
+  scaleChanged();
 };

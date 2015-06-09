@@ -74,10 +74,10 @@ function keyDownHandler(event) {
       view.setScaleFn(event.keyCode - 48);
       break;
     case 107: // +
-      view.setScaleFn(undefined, 1.1);
+      view.multScale(1.1);
       break;
     case 109: // -
-      view.setScaleFn(undefined, 1 / 1.1);
+      view.multScale(1 / 1.1);
       break;
   }
 }
